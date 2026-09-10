@@ -1,0 +1,83 @@
+/* =========================================================================
+   Enactus IFMA Imperatriz — Design Tokens
+   -------------------------------------------------------------------------
+   Todas as cores do site nascem aqui. Se voce precisar ajustar a identidade
+   visual, mude os valores deste arquivo e o site inteiro acompanha.
+
+   As cores da marca do time foram extraidas diretamente dos pixels da arte
+   oficial (seta Enactus com a Ponte Rodoferroviaria e o rio Tocantins).
+
+   REGRA DE MARCA: --gold-enactus e --gray-enactus sao as cores oficiais da
+   Enactus Worldwide e existem AQUI SOMENTE para reproduzir o logo oficial
+   sem alteracao, conforme o Manual de Marca Enactus Brasil 26-27. Nao use
+   essas duas variaveis em elementos de interface.
+   ========================================================================= */
+
+:root {
+  /* ---- Marca do time (Enactus IFMA Imperatriz) ---- */
+  --gold: #f5a633;          /* dourado da seta — cor de acao do site */
+  --gold-deep: #dc8d16;     /* face inferior da seta — hover, sombra */
+  --gold-soft: #fbd9b3;     /* areia clara da margem */
+  --sand: #fbd4ac;          /* areia do Tocantins */
+  --teal: #539492;          /* agua do rio */
+  --teal-deep: #2f6d6b;     /* agua em profundidade */
+  --brown: #432a0c;         /* silhueta da ponte */
+
+  /* ---- Cores oficiais Enactus (uso restrito ao logo) ---- */
+  --gold-enactus: #ffc222;
+  --gray-enactus: #515356;
+  --shadow-enactus: #c88a12;
+
+  /* ---- Superficies ---- */
+  --bg: #fdfaf4;            /* off-white quente, base do site */
+  --bg-raised: #ffffff;     /* cards */
+  --bg-warm: #fdf3e6;       /* faixas de secao */
+  --bg-ink: #241605;        /* faixas escuras, rodape */
+
+  /* ---- Texto ---- */
+  --ink: #2a1b08;           /* titulos e texto forte */
+  --ink-body: #4a3720;      /* corpo de texto */
+  --ink-muted: #7a6647;     /* legendas, metadados */
+  --ink-on-dark: #f7ede0;
+  --ink-on-dark-muted: #c9b393;
+
+  /* ---- Traco e foco ---- */
+  --line: #ecdfc9;
+  --line-strong: #d9c4a2;
+  --focus: #2f6d6b;
+
+  /* ---- Tipografia ---- */
+  --font-sans: "Source Sans 3", "Source Sans Pro", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  --step--1: clamp(0.86rem, 0.84rem + 0.1vw, 0.92rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.12rem);
+  --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.45rem);
+  --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.95rem);
+  --step-3: clamp(1.75rem, 1.5rem + 1.25vw, 2.6rem);
+  --step-4: clamp(2.1rem, 1.6rem + 2.4vw, 3.6rem);
+  --step-5: clamp(2.5rem, 1.7rem + 3.8vw, 4.8rem);
+
+  /* ---- Ritmo ---- */
+  --space-2xs: 0.375rem;
+  --space-xs: 0.625rem;
+  --space-s: 1rem;
+  --space-m: 1.6rem;
+  --space-l: 2.6rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+  --space-3xl: 8.5rem;
+
+  --measure: 62ch;
+  --wrap: 1180px;
+  --wrap-narrow: 780px;
+
+  --radius-s: 6px;
+  --radius-m: 14px;
+  --radius-l: 24px;
+
+  --shadow-s: 0 1px 2px rgba(42, 27, 8, 0.06), 0 2px 8px rgba(42, 27, 8, 0.05);
+  --shadow-m: 0 2px 4px rgba(42, 27, 8, 0.05), 0 12px 32px rgba(42, 27, 8, 0.09);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}

@@ -1,0 +1,17 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Contato from "../../../components/pages/Contato.astro";
+import { t } from "../../../i18n/index.js";
+
+const lang = "en";
+const c = t(lang);
+---
+
+<Base
+  lang={lang}
+  routeKey="contact"
+  title={c.contato.meta.title}
+  description={c.contato.meta.description}
+>
+  <Contato lang={lang} />
+</Base>

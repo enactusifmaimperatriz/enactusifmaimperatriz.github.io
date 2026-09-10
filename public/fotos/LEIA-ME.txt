@@ -1,0 +1,23 @@
+COLOQUE AS FOTOS AQUI
+
+Esta pasta guarda as imagens que aparecem no site.
+
+  public/fotos/           -> fotos de projeto (capa e galeria do projeto)
+  public/fotos/campo/     -> fotos do time em campo, extensao, visitas, eventos
+
+Depois de colocar o arquivo aqui, e preciso registra-lo:
+
+  - foto de projeto ....... src/data/projetos.js
+  - foto do time em campo . src/data/fotos-campo.js
+
+Recomendacoes:
+  - Formato JPG.
+  - Largura de 1600 pixels ja e suficiente. Foto de celular em tamanho
+    original deixa o site lento sem melhorar nada na tela.
+  - Nome de arquivo sem acento, sem espaco e sem letra maiuscula.
+    Bom:  solo-que-gera-01.jpg
+    Ruim: Foto do Projeto (1).JPG
+  - Toda foto precisa de um texto alternativo descrevendo a cena, que e o
+    que uma pessoa cega ouve no lugar da imagem.
+  - Se aparecer rosto de pessoa da comunidade, confirme a autorizacao de
+    uso de imagem antes de publicar.

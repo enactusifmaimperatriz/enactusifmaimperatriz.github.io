@@ -1,0 +1,29 @@
+---
+import { t, href } from "../../i18n/index.js";
+
+const { lang, titulo } = Astro.props;
+const c = t(lang);
+const x = c.emConstrucao;
+---
+
+<section class="obras">
+  <div class="wrap-narrow obras__inner">
+    <p class="eyebrow">{x.eyebrow}</p>
+    <h1>{titulo}</h1>
+    <p class="lead">{x.texto}</p>
+    <p class="obras__acoes">
+      <a class="btn btn--primary" href={href("enactus", lang)}>{x.ctaEnactus}</a>
+      <a class="btn btn--ghost" href={href("contact", lang)}>{x.ctaContato}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .obras {
+    padding-block: var(--space-2xl) var(--space-xl);
+    background: linear-gradient(180deg, var(--bg-warm) 0%, var(--bg) 100%);
+  }
+  .obras__inner > * + * { margin-top: var(--space-s); }
+  .obras__inner .lead { max-width: 52ch; }
+  .obras__acoes { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-m); }
+</style>

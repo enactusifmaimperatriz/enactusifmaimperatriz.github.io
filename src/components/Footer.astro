@@ -1,0 +1,158 @@
+---
+import { t, NAV, href } from "../i18n/index.js";
+import { REDES_ATIVAS } from "../data/redes.js";
+import IconeRede from "./IconeRede.astro";
+
+const { lang } = Astro.props;
+const c = t(lang);
+const ano = new Date().getFullYear();
+---
+
+<footer class="rodape">
+  <div class="wrap rodape__grid">
+    <div class="rodape__marca">
+      <img src="/brand/logo-time.png" alt="" width="640" height="609" />
+      <p class="rodape__sobre">{c.footer.sobre}</p>
+    </div>
+
+    <nav aria-labelledby="rod-nav">
+      <h2 id="rod-nav" class="rodape__titulo">{c.footer.navTitulo}</h2>
+      <ul>
+        <li><a href={href("home", lang)}>{c.site.nomeCurto}</a></li>
+        {NAV.map((key) => <li><a href={href(key, lang)}>{c.nav[key]}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="rod-rede">
+      <h2 id="rod-rede" class="rodape__titulo">{c.footer.redeTitulo}</h2>
+      <ul>
+        <li><a href="https://enactus.org.br" rel="noopener noreferrer" target="_blank">Enactus Brasil</a></li>
+        <li><a href="https://enactus.org" rel="noopener noreferrer" target="_blank">Enactus Worldwide</a></li>
+        <li><a href="https://www.ifma.edu.br" rel="noopener noreferrer" target="_blank">IFMA</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="rod-contato">
+      <h2 id="rod-contato" class="rodape__titulo">{c.footer.contatoTitulo}</h2>
+      <ul>
+        {REDES_ATIVAS.map((r) => (
+          <li>
+            <a
+              class="rodape__rede"
+              href={r.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconeRede id={r.id} size={17} />
+              <span>{r.handle || r.rotulo}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="wrap rodape__base">
+    <p class="rodape__aviso">{c.footer.aviso}</p>
+    <p class="rodape__direitos">© {ano} {c.footer.direitos}. {c.footer.creditoIlustracao}</p>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    background: var(--bg-ink);
+    color: var(--ink-on-dark);
+    padding-block: var(--space-xl) var(--space-m);
+    margin-top: var(--space-2xl);
+  }
+
+  .rodape__grid {
+    display: grid;
+    gap: var(--space-l);
+    grid-template-columns: 1.8fr 1fr 1fr 1fr;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .rodape__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .rodape__marca { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 480px) {
+    .rodape__grid { grid-template-columns: 1fr; }
+  }
+
+  .rodape__marca img {
+    width: 3.4rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .rodape__sobre {
+    color: var(--ink-on-dark-muted);
+    max-width: 40ch;
+    font-size: var(--step--1);
+  }
+
+  .rodape__titulo {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--gold);
+    font-weight: 800;
+    margin-bottom: var(--space-xs);
+  }
+
+  .rodape ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .rodape a {
+    color: var(--ink-on-dark);
+    text-decoration: none;
+    font-size: var(--step--1);
+    border-bottom: 1px solid transparent;
+  }
+
+  .rodape a:hover {
+    border-bottom-color: var(--gold);
+  }
+
+  .rodape__rede {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  /* Sem isto o flexbox espreme o ícone até a largura zero quando o texto
+     ao lado é longo, como no caso do endereço de e-mail. */
+  .rodape__rede :global(svg) {
+    flex: 0 0 auto;
+    margin-top: 0.18em;
+  }
+
+  /* Endereço longo quebra em duas linhas em vez de estourar a coluna. */
+  .rodape__rede span {
+    overflow-wrap: anywhere;
+  }
+
+  .rodape__rede:hover { color: var(--gold); }
+
+  .rodape__base {
+    margin-top: var(--space-l);
+    padding-top: var(--space-m);
+    border-top: 1px solid rgba(247, 237, 224, 0.16);
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .rodape__aviso,
+  .rodape__direitos {
+    color: var(--ink-on-dark-muted);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    max-width: 90ch;
+  }
+</style>

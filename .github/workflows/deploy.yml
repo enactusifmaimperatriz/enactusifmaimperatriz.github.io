@@ -1,0 +1,47 @@
+# Publica o site no GitHub Pages toda vez que alguem salva uma alteracao
+# na branch principal. Nao e preciso rodar nada na maquina: o GitHub faz
+# a reconstrucao e a publicacao sozinho, em cerca de dois minutos.
+#
+# Para ligar: no GitHub, va em Settings > Pages e escolha "GitHub Actions"
+# como origem (Source).
+
+name: Publicar site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

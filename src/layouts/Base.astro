@@ -1,0 +1,133 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { t, ROUTES } from "../i18n/index.js";
+
+const { lang, routeKey, title, description } = Astro.props;
+const c = t(lang);
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const alternates = [
+  { hreflang: "pt-BR", href: new URL(ROUTES[routeKey].pt, Astro.site).href },
+  { hreflang: "en", href: new URL(ROUTES[routeKey].en, Astro.site).href },
+  { hreflang: "x-default", href: new URL(ROUTES[routeKey].pt, Astro.site).href },
+];
+const ogImage = new URL("/brand/logo-time.png", Astro.site).href;
+---
+
+<!doctype html>
+<html lang={c.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={c.site.nome} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === "pt" ? "pt_BR" : "en_US"} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#f5a633" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap"
+    />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#conteudo">{c.nav.irParaConteudo}</a>
+    <Header lang={lang} routeKey={routeKey} />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+
+    <script>
+      /**
+       * Contagem crescente dos números marcados com [data-contar].
+       *
+       * O HTML já chega do servidor com o valor final escrito. O script
+       * zera o número e o faz subir até o valor real quando o bloco entra
+       * na tela, cada número começando um pouco depois do anterior.
+       * Proteções:
+       *   - sem JavaScript, o valor final aparece normalmente;
+       *   - cada número anima uma única vez.
+       */
+      const alvos = document.querySelectorAll("[data-contar]");
+
+      if (alvos.length > 0 && "IntersectionObserver" in window) {
+        const planos = new Map();
+
+        for (const el of alvos) {
+          const texto = (el.textContent ?? "").trim();
+          // Separa prefixo, número e sufixo: "+30" -> "+", "30", ""
+          //                                  "13,1 mi" -> "", "13,1", " mi"
+          const m = texto.match(/^([^\d]*)([\d.,]+)(.*)$/);
+          if (!m) continue;
+          const decimais = m[2].includes(",") ? m[2].split(",")[1].length : 0;
+          const valorFinal = parseFloat(m[2].replace(/\./g, "").replace(",", "."));
+          const formatar = (v) =>
+            m[1] +
+            v.toLocaleString("pt-BR", {
+              minimumFractionDigits: decimais,
+              maximumFractionDigits: decimais,
+            }) +
+            m[3];
+          planos.set(el, { texto, valorFinal, formatar });
+          // Zera já na carga, para o número não aparecer pronto e "cair".
+          el.textContent = formatar(0);
+        }
+
+        const DURACAO = 2000;
+        const CASCATA = 180; // atraso entre um número e o seguinte
+
+        const animar = (el, plano) => {
+          let inicio;
+          const passo = (agora) => {
+            if (inicio === undefined) inicio = agora;
+            const t = Math.min((agora - inicio) / DURACAO, 1);
+            // Começa rápido e desacelera chegando no valor.
+            const suave = 1 - Math.pow(1 - t, 3);
+            if (t < 1) {
+              el.textContent = plano.formatar(plano.valorFinal * suave);
+              requestAnimationFrame(passo);
+            } else {
+              // Fecha com o texto original exato, sem erro de arredondamento.
+              el.textContent = plano.texto;
+            }
+          };
+          requestAnimationFrame(passo);
+        };
+
+        const observador = new IntersectionObserver(
+          (entradas) => {
+            const visiveis = entradas.filter((e) => e.isIntersecting);
+            visiveis.forEach((entrada, i) => {
+              observador.unobserve(entrada.target);
+              const plano = planos.get(entrada.target);
+              if (!plano) return;
+              // Números que entram juntos na tela partem em cascata,
+              // um atrás do outro, em vez de todos ao mesmo tempo.
+              setTimeout(() => animar(entrada.target, plano), i * CASCATA);
+            });
+          },
+          { threshold: 0.6 }
+        );
+
+        for (const el of planos.keys()) observador.observe(el);
+      }
+    </script>
+  </body>
+</html>

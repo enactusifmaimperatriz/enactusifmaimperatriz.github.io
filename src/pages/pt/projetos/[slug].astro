@@ -1,0 +1,30 @@
+---
+import Base from "../../../layouts/Base.astro";
+import ProjetoDetalhe from "../../../components/pages/ProjetoDetalhe.astro";
+import { t } from "../../../i18n/index.js";
+import { PROJETOS_COM_PAGINA } from "../../../data/projetos.js";
+
+const lang = "pt";
+
+// Só gera página para projeto que já tem problema e solução escritos.
+// Enquanto a lista estiver vazia, nenhuma página extra é criada.
+export function getStaticPaths() {
+  return PROJETOS_COM_PAGINA.map((projeto) => ({
+    params: { slug: projeto.slug },
+    props: { projeto },
+  }));
+}
+
+const { projeto } = Astro.props;
+const c = t(lang);
+const resumo = projeto.resumo?.[lang] || projeto.resumo?.pt || c.projetos.meta.description;
+---
+
+<Base
+  lang={lang}
+  routeKey="projects"
+  title={`${projeto.nome} | ${c.site.nome}`}
+  description={resumo}
+>
+  <ProjetoDetalhe lang={lang} projeto={projeto} />
+</Base>

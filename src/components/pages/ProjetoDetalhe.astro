@@ -1,0 +1,500 @@
+---
+import { t, href } from "../../i18n/index.js";
+import Galeria from "../Galeria.astro";
+
+const { lang, projeto } = Astro.props;
+const c = t(lang);
+const p = c.projetos;
+
+const txt = (campo) => projeto[campo]?.[lang] || projeto[campo]?.pt || "";
+
+const fotos = projeto.galeria ?? [];
+
+// Cada bloco de texto recebe uma foto da galeria, na ordem, e os lados
+// se alternam: texto à esquerda, depois foto à esquerda, e assim por diante.
+// Se faltar foto, o bloco ocupa a largura toda sozinho.
+const blocos = [
+  { chave: "problema", texto: txt("problema") },
+  { chave: "solucao", texto: txt("solucao") },
+  { chave: "comunidade", texto: txt("comunidade") },
+]
+  .filter((b) => b.texto !== "")
+  .map((b, i) => ({ ...b, foto: fotos[i] ?? null }));
+
+// Sobrando foto além do número de blocos, ela vai para uma galeria no fim.
+// Com as três fotos atuais isso não acontece e nenhuma galeria é criada.
+const fotosRestantes = fotos.slice(blocos.length);
+---
+
+<section class="topo">
+  <div class="wrap topo__inner">
+    <p class="volta">
+      <a href={href("projects", lang)}>&larr; {p.rotulos.voltar}</a>
+    </p>
+    <p class="topo__meta">
+      <span class={`selo selo--${projeto.status}`}>{p.status[projeto.status]}</span>
+      {projeto.ano && <span class="topo__ano">{p.rotulos.desde} {projeto.ano}</span>}
+    </p>
+    <h1>{projeto.nome}</h1>
+    {txt("resumo") && <p class="lead">{txt("resumo")}</p>}
+  </div>
+</section>
+
+{
+  projeto.capa && (
+    <div class="wrap capa">
+      <img
+        src={`/fotos/${projeto.capa}`}
+        alt={projeto.capaAlt?.[lang] ?? projeto.capaAlt?.pt ?? ""}
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+  )
+}
+
+<section class="section-tight">
+  <div class="wrap">
+    {
+      blocos.map((b, i) => (
+        <div
+          class={[
+            "bloco",
+            // Sem foto o bloco ocupa a largura toda, em vez de deixar
+            // metade da linha vazia à direita.
+            b.foto ? "" : "bloco--simples",
+            b.foto && i % 2 === 1 ? "bloco--invertido" : "",
+          ].filter(Boolean).join(" ")}
+        >
+          <div class="bloco__texto">
+            <h2>{p.rotulos[b.chave]}</h2>
+            <p class="prose">{b.texto}</p>
+          </div>
+
+          {b.foto && (
+            <figure class="bloco__foto">
+              <img
+                src={`/fotos/${b.foto.arquivo}`}
+                alt={b.foto.alt?.[lang] ?? b.foto.alt?.pt ?? ""}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+              {b.foto.legenda?.[lang] && <figcaption>{b.foto.legenda[lang]}</figcaption>}
+            </figure>
+          )}
+        </div>
+      ))
+    }
+
+  </div>
+</section>
+
+<!-- ============================== ODS ============================== -->
+{
+  projeto.ods.length > 0 && (
+    <section class="section ods">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{p.rotulos.ods}</h2>
+          <p class="lead">{p.odsIntro}</p>
+        </div>
+
+        <ul class="ods__lista">
+          {projeto.ods.map((o) => (
+            <li class={`ods__item ${o.principal ? "ods__item--principal" : ""}`}>
+              <img
+                class="ods__icone"
+                src={`/ods/ods-${lang}-${o.numero}.png`}
+                alt={`ODS ${o.numero}: ${o.titulo[lang] ?? o.titulo.pt}`}
+                width="400"
+                height="400"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="ods__texto">
+                {o.principal && <span class="ods__tag">{p.rotulos.odsPrincipal}</span>}
+                <h3>{o.titulo[lang] ?? o.titulo.pt}</h3>
+                <p class="ods__meta">{o.meta[lang] ?? o.meta.pt}</p>
+                <p>{o.texto[lang] ?? o.texto.pt}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<!-- ========================= COMO É FEITO ========================= -->
+{
+  projeto.etapas?.length > 0 && (
+    <section class="section section--warm">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{p.rotulos.etapas}</h2>
+        </div>
+        <ol class="etapas">
+          {projeto.etapas.map((e) => (
+            <li class="etapa">
+              <h3>{e.titulo[lang] ?? e.titulo.pt}</h3>
+              <p>{e.texto[lang] ?? e.texto.pt}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )
+}
+
+<!-- ========================== CONQUISTAS ========================== -->
+{
+  projeto.conquistas?.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{p.rotulos.conquistas}</h2>
+        </div>
+        <div class="conquistas">
+          {projeto.conquistas.map((c) => (
+            <article class="card conquista">
+              <span class="conquista__seta" aria-hidden="true" />
+              <h3>{c.titulo[lang] ?? c.titulo.pt}</h3>
+              <p>{c.texto[lang] ?? c.texto.pt}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  projeto.resultados.length > 0 && (
+    <section class="section section--ink">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{p.rotulos.resultados}</h2>
+        </div>
+        <dl class="resultados">
+          {projeto.resultados.map((r) => (
+            <div>
+              <dd data-contar>{r.valor}</dd>
+              <dt>{r.rotulo?.[lang] ?? r.rotulo?.pt ?? ""}</dt>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )
+}
+
+<!-- ===================== NÚMEROS DE PLANEJAMENTO =====================
+     Sem data-contar de propósito: contagem crescente dá ar de resultado
+     conquistado, e estes números ainda são projeção. -->
+{
+  projeto.projecoes?.length > 0 && (
+    <section class="section section--ink">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{p.rotulos.projecoes}</h2>
+        </div>
+        <dl class="resultados">
+          {projeto.projecoes.map((r) => (
+            <div>
+              <dd>{r.valor}</dd>
+              <dt>{r.rotulo?.[lang] ?? r.rotulo?.pt ?? ""}</dt>
+            </div>
+          ))}
+        </dl>
+        {projeto.projecoesNota && (
+          <p class="projecoes__nota">
+            {projeto.projecoesNota[lang] ?? projeto.projecoesNota.pt}
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+{
+  fotosRestantes.length > 0 && (
+    <section class="section section--warm">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>{p.rotulos.galeria}</h2>
+        </div>
+        <Galeria itens={fotosRestantes} base="/fotos" lang={lang} />
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .topo {
+    background:
+      radial-gradient(70% 130% at 78% 0%, rgba(245, 166, 51, 0.24) 0%, rgba(245, 166, 51, 0) 60%),
+      linear-gradient(180deg, var(--bg-warm) 0%, var(--bg) 100%);
+    padding-block: var(--space-l) var(--space-l);
+  }
+
+  .topo__inner > * + * { margin-top: var(--space-s); }
+  .topo__inner .lead { max-width: 56ch; }
+
+  .volta a {
+    font-size: var(--step--1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal-deep);
+    text-decoration: none;
+  }
+  .volta a:hover { color: var(--gold-deep); }
+
+  .topo__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .topo__ano {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.22em 0.7em;
+    border-radius: 999px;
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .selo::before {
+    content: "";
+    width: 0.5em; height: 0.5em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .selo--ativo { background: rgba(83, 148, 146, 0.16); color: var(--teal-deep); }
+  .selo--piloto { background: rgba(245, 166, 51, 0.2); color: var(--gold-deep); }
+  .selo--concluido { background: rgba(67, 42, 12, 0.1); color: var(--brown); }
+
+  .capa { margin-top: var(--space-m); }
+  .capa img {
+    width: 100%;
+    max-height: 30rem;
+    object-fit: cover;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--line);
+  }
+
+  /* ------------------------------ BLOCOS ------------------------------
+     Texto de um lado, foto do outro, alternando a cada bloco. É isso que
+     ocupa a margem que antes ficava vazia. */
+  .bloco {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .bloco + .bloco { margin-top: var(--space-2xl); }
+
+  .bloco h2 { margin-bottom: var(--space-xs); }
+
+  /* Respeita as quebras de parágrafo escritas no texto do projeto. */
+  .bloco .prose {
+    white-space: pre-line;
+    max-width: none; /* a própria coluna já limita a linha */
+  }
+
+  /* Bloco sem foto (os ODS) não vira duas colunas. */
+  .bloco--simples { grid-template-columns: minmax(0, 1fr); }
+  .bloco--simples .bloco__texto { max-width: var(--wrap-narrow); }
+
+  .bloco__foto { margin: 0; }
+
+  .bloco__foto img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--line);
+  }
+
+  .bloco__foto figcaption {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  @media (min-width: 861px) {
+    .bloco--invertido .bloco__texto { order: 2; }
+    .bloco--invertido .bloco__foto { order: 1; }
+  }
+
+  /* No celular vira uma coluna só, com o texto sempre antes da foto. */
+  @media (max-width: 860px) {
+    .bloco {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-m);
+    }
+    .bloco + .bloco { margin-top: var(--space-xl); }
+  }
+
+  /* ----------------------------- ETAPAS ----------------------------- */
+  .etapas {
+    list-style: none;
+    padding: 0;
+    counter-reset: etapa;
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 900px) {
+    .etapas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .etapas { grid-template-columns: 1fr; }
+  }
+
+  .etapa {
+    counter-increment: etapa;
+    padding-top: var(--space-s);
+    border-top: 3px solid var(--gold);
+  }
+
+  .etapa::before {
+    content: counter(etapa, decimal-leading-zero);
+    display: block;
+    font-size: var(--step--1);
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: var(--gold-deep);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .etapa p { margin-top: var(--space-2xs); }
+
+  /* --------------------------- CONQUISTAS --------------------------- */
+  .conquistas {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  }
+
+  .conquista > * + * { margin-top: var(--space-xs); }
+
+  .conquista__seta {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: var(--gold);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  /* --------------------------- PROJEÇÕES --------------------------- */
+  .projecoes__nota {
+    margin-top: var(--space-m);
+    padding-left: var(--space-s);
+    border-left: 3px solid var(--gold);
+    max-width: 68ch;
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--ink-on-dark-muted);
+  }
+
+  /* ------------------------------- ODS ------------------------------- */
+  .ods { background: var(--bg-warm); }
+
+  .ods__lista {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .ods__item {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: var(--space-m);
+    align-items: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: var(--space-m);
+  }
+
+  /* O ODS principal ganha um traço dourado à esquerda, para se distinguir
+     dos secundários sem precisar de explicação escrita. */
+  .ods__item--principal { border-left: 5px solid var(--gold); }
+
+  .ods__icone {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-s);
+  }
+
+  .ods__texto > * + * { margin-top: var(--space-2xs); }
+  .ods__texto p { max-width: 62ch; }
+
+  .ods__tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 0.15em 0.7em;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ods__meta {
+    font-weight: 800;
+    color: var(--teal-deep);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 620px) {
+    .ods__item {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-s);
+    }
+    .ods__icone { width: 7rem; }
+  }
+
+  .resultados {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+  .resultados > div {
+    border-top: 3px solid var(--gold);
+    padding-top: var(--space-xs);
+  }
+  .resultados dd {
+    margin: 0;
+    font-size: var(--step-3);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--ink-on-dark);
+  }
+  .resultados dt {
+    margin-top: 0.25em;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 600;
+    color: var(--ink-on-dark-muted);
+  }
+</style>

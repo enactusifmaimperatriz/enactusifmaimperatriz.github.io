@@ -1,0 +1,17 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Projetos from "../../../components/pages/Projetos.astro";
+import { t } from "../../../i18n/index.js";
+
+const lang = "en";
+const c = t(lang);
+---
+
+<Base
+  lang={lang}
+  routeKey="projects"
+  title={c.projetos.meta.title}
+  description={c.projetos.meta.description}
+>
+  <Projetos lang={lang} />
+</Base>

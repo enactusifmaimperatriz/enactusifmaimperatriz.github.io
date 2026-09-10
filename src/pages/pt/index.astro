@@ -1,0 +1,12 @@
+---
+import Base from "../../layouts/Base.astro";
+import Home from "../../components/pages/Home.astro";
+import { t } from "../../i18n/index.js";
+
+const lang = "pt";
+const c = t(lang);
+---
+
+<Base lang={lang} routeKey="home" title={c.home.meta.title} description={c.home.meta.description}>
+  <Home lang={lang} />
+</Base>

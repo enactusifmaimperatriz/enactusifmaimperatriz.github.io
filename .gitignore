@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+npm-debug.log*
+
+# Material de origem, guardado só no computador do time.
+# São os PDFs que deram origem ao conteúdo do site (manual do projeto,
+# deck da rede, artes). Somam quase 90 MB e o Git guardaria isso para
+# sempre no histórico, então ficam fora. Mantenha-os no Drive do time.
+*.pdf

@@ -1,0 +1,628 @@
+---
+import { t, href } from "../../i18n/index.js";
+import { GLOBAL, TIME } from "../../data/rede-enactus.js";
+import { INSTAGRAM } from "../../data/redes.js";
+import { PROJETOS } from "../../data/projetos.js";
+import { CONQUISTAS, IMPRENSA, FOTO_CONQUISTA } from "../../data/conquistas.js";
+import IconeRede from "../IconeRede.astro";
+
+const { lang } = Astro.props;
+const c = t(lang);
+const h = c.home;
+
+// Só mostra o quadro de números quando existir número de verdade.
+// Enquanto os valores forem "—" em src/data/rede-enactus.js, o site exibe
+// apenas o aviso de que os dados estão sendo consolidados.
+const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
+---
+
+<!-- ============================== HERO ============================== -->
+<section class="hero">
+  <div class="hero__fundo" aria-hidden="true"></div>
+  <div class="wrap hero__inner">
+    <div class="hero__texto">
+      <p class="eyebrow">{h.hero.eyebrow}</p>
+      <h1>{h.hero.titulo}</h1>
+      <p class="lead">{h.hero.lead}</p>
+      <div class="hero__acoes">
+        <a class="btn btn--primary" href={href("projects", lang)}>{h.hero.ctaPrimaria}</a>
+        <a class="btn btn--ghost" href={href("contact", lang)}>{h.hero.ctaSecundaria}</a>
+      </div>
+    </div>
+
+    <figure class="hero__marca">
+      <img
+        src="/brand/logo-time.png"
+        alt={h.hero.creditoImagem}
+        width="640"
+        height="609"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</section>
+
+<!-- =========================== CONQUISTAS ===========================
+     Vem logo depois do topo de propósito: é a credencial mais forte do
+     time e o que faz um visitante decidir continuar lendo. -->
+<section class="section section--ink conquistas">
+  <div class="wrap conquistas__inner">
+    <div class="conquistas__texto">
+      <p class="eyebrow">{h.conquistas.eyebrow}</p>
+      <h2>{h.conquistas.titulo}</h2>
+      <p class="lead">{h.conquistas.lead}</p>
+
+      <ul class="premios">
+        {
+          CONQUISTAS.map((c) => (
+            <li class="premio">
+              <span class="premio__ano">{c.ano}</span>
+              <h3>{c.titulo[lang] ?? c.titulo.pt}</h3>
+              <p class="premio__onde">{c.onde[lang] ?? c.onde.pt}</p>
+              <p class="premio__texto">{c.texto[lang] ?? c.texto.pt}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      {
+        IMPRENSA.length > 0 && (
+          <div class="imprensa">
+            <p class="imprensa__rotulo">{h.conquistas.imprensa}</p>
+            <ul>
+              {IMPRENSA.map((m) => (
+                <li>
+                  <a href={m.url} target="_blank" rel="noopener noreferrer">
+                    <span class="imprensa__veiculo">{m.veiculo}</span>
+                    <span class="imprensa__titulo">{m.titulo[lang] ?? m.titulo.pt}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
+    <figure class="conquistas__foto">
+      <img
+        src={`/fotos/${FOTO_CONQUISTA.arquivo}`}
+        alt={FOTO_CONQUISTA.alt[lang] ?? FOTO_CONQUISTA.alt.pt}
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+</section>
+
+<!-- ==================== NÚMEROS DO TIME ====================
+     Só aparece quando existir número de verdade em rede-enactus.js.
+     Hoje o time está em fase de projeção, então a seção fica fora. -->
+{
+  numerosTime.length > 0 && (
+    <section class="section-tight">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">{h.numeros.eyebrow}</p>
+          <h2>{h.numeros.titulo}</h2>
+          <p>{h.numeros.lead}</p>
+        </div>
+        <dl class="numeros">
+          {numerosTime.map((n) => (
+            <div class="numeros__item">
+              <dt>{h.numeros.rotulos[n.chave]}</dt>
+              <dd>{n.valor}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )
+}
+
+<!-- =========================== COMO ATUAMOS =========================== -->
+<section class="section section--warm">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">{h.comoAtuamos.eyebrow}</p>
+      <h2>{h.comoAtuamos.titulo}</h2>
+      <p class="lead">{h.comoAtuamos.lead}</p>
+    </div>
+
+    <ol class="etapas">
+      {
+        h.comoAtuamos.etapas.map((e) => (
+          <li class="etapa">
+            <span class="etapa__num" aria-hidden="true">{e.numero}</span>
+            <h3>{e.titulo}</h3>
+            <p>{e.texto}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- ============================== A REDE ============================== -->
+<section class="section section--ink">
+  <div class="wrap rede">
+    <div class="rede__texto">
+      <p class="eyebrow">{h.redePreview.eyebrow}</p>
+      <h2>{h.redePreview.titulo}</h2>
+      <p>{h.redePreview.texto}</p>
+      <p>
+        <a class="btn btn--primary" href={href("enactus", lang)}>{h.redePreview.cta}</a>
+      </p>
+    </div>
+
+    <dl class="rede__numeros">
+      {
+        GLOBAL.map((n) => (
+          <div>
+            <dd data-contar>{n.valor}</dd>
+            <dt>{h.redePreview.rotulos[n.chave]}</dt>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<!-- ============================= PROJETOS ============================= -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">{h.projetosPreview.eyebrow}</p>
+      <h2>{h.projetosPreview.titulo}</h2>
+      <p class="lead">{h.projetosPreview.lead}</p>
+    </div>
+
+    <ul class="previa">
+      {
+        PROJETOS.map((proj) => {
+          const resumo = proj.resumo?.[lang] || proj.resumo?.pt || "";
+          return (
+            <li>
+              <a class="card previa__card" href={href("projects", lang)}>
+                <span class={`selo selo--${proj.status}`}>{c.projetos.status[proj.status]}</span>
+                <h3>{proj.nome}</h3>
+                <p>{resumo || h.projetosPreview.vazio}</p>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <p class="previa__acao">
+      <a class="btn btn--ghost" href={href("projects", lang)}>{h.projetosPreview.cta}</a>
+    </p>
+  </div>
+</section>
+
+<!-- ============================= PARTICIPE ============================= -->
+<section class="section section--warm">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">{h.participe.eyebrow}</p>
+      <h2>{h.participe.titulo}</h2>
+    </div>
+
+    <div class="grid caminhos">
+      {
+        h.participe.caminhos.map((cam, i) => (
+          <article class="card caminho">
+            <p class="caminho__publico">{cam.publico}</p>
+            <h3>{cam.titulo}</h3>
+            <p>{cam.texto}</p>
+            <p>
+              <a
+                class={i === 0 ? "btn btn--primary" : "btn btn--ghost"}
+                href={i === 0 ? `${href("contact", lang)}#entrar` : href("contact", lang)}
+              >
+                {cam.cta}
+              </a>
+            </p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ============================= INSTAGRAM ============================= -->
+{
+  INSTAGRAM?.url && (
+    <section class="section-tight insta">
+      <div class="wrap insta__inner">
+        <div class="insta__texto">
+          <p class="eyebrow">{h.instagram.eyebrow}</p>
+          <h2>{h.instagram.titulo}</h2>
+          <p>{h.instagram.texto}</p>
+        </div>
+
+        <a
+          class="btn btn--primary insta__cta"
+          href={INSTAGRAM.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IconeRede id="instagram" size={20} />
+          {h.instagram.cta}
+          <span class="insta__handle">{INSTAGRAM.handle}</span>
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* ------------------------------ HERO ------------------------------ */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--space-2xl) var(--space-2xl);
+  }
+
+  .hero__fundo {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(90% 120% at 88% 8%, rgba(245, 166, 51, 0.28) 0%, rgba(245, 166, 51, 0) 58%),
+      radial-gradient(70% 100% at 4% 92%, rgba(83, 148, 146, 0.18) 0%, rgba(83, 148, 146, 0) 60%),
+      linear-gradient(175deg, var(--bg-warm) 0%, var(--bg) 62%);
+  }
+
+  .hero__fundo::after {
+    /* seta triangular derivada da marca, como marca d'água */
+    content: "";
+    position: absolute;
+    right: -14%;
+    bottom: -34%;
+    width: min(58vw, 40rem);
+    aspect-ratio: 1;
+    background: var(--gold);
+    opacity: 0.08;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    transform: rotate(-14deg);
+    transform-origin: 30% 50%;
+  }
+
+  .hero__inner {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: center;
+  }
+
+  .hero__texto > * + * { margin-top: var(--space-s); }
+  .hero__texto .lead { max-width: 54ch; }
+
+  .hero__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-m);
+  }
+
+  .hero__marca {
+    display: grid;
+    place-items: center;
+  }
+
+  .hero__marca img {
+    width: min(100%, 26rem);
+    filter: drop-shadow(0 18px 38px rgba(67, 42, 12, 0.16));
+    animation: flutuar 9s var(--ease) infinite;
+  }
+
+  @keyframes flutuar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (max-width: 880px) {
+    .hero__inner { grid-template-columns: 1fr; }
+    .hero__marca { order: -1; }
+    .hero__marca img { width: min(72%, 15rem); }
+  }
+
+  /* ---------------------------- NÚMEROS ---------------------------- */
+  .numeros {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    border-top: 2px solid var(--line);
+    padding-top: var(--space-m);
+  }
+
+  .numeros__item dt {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+  }
+
+  .numeros__item dd {
+    margin: 0.1em 0 0;
+    font-size: var(--step-3);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  /* --------------------------- CONQUISTAS --------------------------- */
+  .conquistas__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  @media (max-width: 880px) {
+    .conquistas__inner { grid-template-columns: 1fr; gap: var(--space-l); }
+  }
+
+  .conquistas__texto > * + * { margin-top: var(--space-s); }
+  .conquistas__texto .lead { color: var(--ink-on-dark-muted); max-width: 48ch; }
+
+  .conquistas__foto img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-m);
+    border: 1px solid rgba(247, 237, 224, 0.18);
+  }
+
+  .premios {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    margin-top: var(--space-m);
+  }
+
+  .premio {
+    border-left: 3px solid var(--gold);
+    padding-left: var(--space-s);
+  }
+
+  .premio__ano {
+    display: block;
+    font-size: var(--step--1);
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+  }
+
+  .premio h3 { color: var(--ink-on-dark); margin-top: 0.1em; }
+
+  .premio__onde {
+    color: var(--gold);
+    font-size: var(--step--1);
+    font-weight: 600;
+    margin-top: 0.15em;
+  }
+
+  .premio__texto {
+    color: var(--ink-on-dark-muted);
+    font-size: var(--step--1);
+    line-height: 1.55;
+    margin-top: 0.35em;
+    max-width: 46ch;
+  }
+
+  /* ---------------------------- IMPRENSA ---------------------------- */
+  .imprensa {
+    margin-top: var(--space-m);
+    padding-top: var(--space-s);
+    border-top: 1px solid rgba(247, 237, 224, 0.18);
+  }
+
+  .imprensa__rotulo {
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .imprensa ul { list-style: none; padding: 0; display: grid; gap: var(--space-2xs); }
+
+  .imprensa a {
+    display: grid;
+    gap: 0.1em;
+    text-decoration: none;
+    padding: 0.4rem 0.6rem;
+    margin-left: -0.6rem;
+    border-radius: var(--radius-s);
+    transition: background-color 0.18s var(--ease);
+  }
+
+  .imprensa a:hover { background: rgba(245, 166, 51, 0.14); }
+
+  .imprensa__veiculo {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-on-dark-muted);
+  }
+
+  .imprensa__titulo {
+    color: var(--ink-on-dark);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .imprensa a:hover .imprensa__titulo { color: var(--gold); }
+
+  /* ----------------------------- ETAPAS ----------------------------- */
+  /* 4 colunas no desktop, 2 no tablet, 1 no celular.
+     Evita a quebra 3+1, que deixa uma etapa órfã na segunda linha. */
+  .etapas {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    list-style: none;
+    padding: 0;
+    counter-reset: etapa;
+  }
+
+  @media (max-width: 1000px) {
+    .etapas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 560px) {
+    .etapas { grid-template-columns: 1fr; }
+  }
+
+  .etapa {
+    position: relative;
+    padding-top: var(--space-m);
+    border-top: 3px solid var(--gold);
+  }
+
+  .etapa > * + * { margin-top: var(--space-2xs); }
+
+  .etapa__num {
+    display: block;
+    font-size: var(--step--1);
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: var(--gold-deep);
+  }
+
+  /* ------------------------------ REDE ------------------------------ */
+  .rede {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: center;
+  }
+
+  .rede__texto > * + * { margin-top: var(--space-s); }
+  .rede__texto p { color: var(--ink-on-dark-muted); max-width: 58ch; }
+
+  .rede__numeros {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  }
+
+  .rede__numeros > div {
+    border-left: 3px solid var(--gold);
+    padding-left: var(--space-xs);
+  }
+
+  .rede__numeros dd {
+    margin: 0;
+    font-size: var(--step-2);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--ink-on-dark);
+    line-height: 1.05;
+  }
+
+  .rede__numeros dt {
+    font-size: 0.78rem;
+    color: var(--ink-on-dark-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 600;
+  }
+
+  @media (max-width: 880px) {
+    .rede { grid-template-columns: 1fr; gap: var(--space-l); }
+  }
+
+  /* ------------------------- PRÉVIA DE PROJETOS ------------------------- */
+  .previa {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+
+  .previa__card { padding: var(--space-m); }
+  .previa__card > * + * { margin-top: var(--space-xs); }
+
+  .previa__acao { margin-top: var(--space-m); }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.22em 0.7em;
+    border-radius: 999px;
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .selo::before {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .selo--ativo { background: rgba(83, 148, 146, 0.16); color: var(--teal-deep); }
+  .selo--piloto { background: rgba(245, 166, 51, 0.2); color: var(--gold-deep); }
+  .selo--concluido { background: rgba(67, 42, 12, 0.1); color: var(--brown); }
+
+  /* ---------------------------- CAMINHOS ---------------------------- */
+  .caminhos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+
+  .caminho__publico {
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-deep);
+  }
+
+  .caminho > p:last-child { margin-top: var(--space-s); }
+
+  /* ---------------------------- INSTAGRAM ---------------------------- */
+  .insta__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    border-radius: var(--radius-l);
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(80% 160% at 12% 0%, rgba(245, 166, 51, 0.22) 0%, rgba(245, 166, 51, 0) 62%),
+      radial-gradient(70% 140% at 95% 100%, rgba(83, 148, 146, 0.16) 0%, rgba(83, 148, 146, 0) 60%),
+      var(--bg-raised);
+  }
+
+  .insta__texto { max-width: 46ch; }
+  .insta__texto > * + * { margin-top: var(--space-xs); }
+
+  .insta__cta { flex-shrink: 0; }
+
+  .insta__handle {
+    padding-left: 0.55em;
+    margin-left: 0.35em;
+    border-left: 1px solid rgba(42, 27, 8, 0.28);
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 620px) {
+    .insta__inner { padding: var(--space-m); }
+    .insta__cta { width: 100%; }
+    .insta__handle { display: none; }
+  }
+</style>

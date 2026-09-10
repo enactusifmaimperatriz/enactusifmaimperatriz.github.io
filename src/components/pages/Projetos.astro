@@ -1,0 +1,254 @@
+---
+import { t, href } from "../../i18n/index.js";
+import { PROJETOS, temPaginaPropria } from "../../data/projetos.js";
+import { FOTOS_CAMPO } from "../../data/fotos-campo.js";
+import { INSTAGRAM } from "../../data/redes.js";
+import IconeRede from "../IconeRede.astro";
+import Galeria from "../Galeria.astro";
+
+const { lang } = Astro.props;
+const c = t(lang);
+const p = c.projetos;
+
+const base = href("projects", lang);
+---
+
+<section class="topo">
+  <div class="wrap topo__inner">
+    <p class="eyebrow">{p.hero.eyebrow}</p>
+    <h1>{p.hero.titulo}</h1>
+    <p class="lead">{p.hero.lead}</p>
+  </div>
+</section>
+
+<!-- ========================= LISTA DE PROJETOS ========================= -->
+<section class="section-tight">
+  <div class="wrap">
+    <ul class="lista">
+      {
+        PROJETOS.map((proj) => {
+          const temPagina = temPaginaPropria(proj);
+          const resumo = proj.resumo?.[lang] || proj.resumo?.pt || "";
+          return (
+            <li>
+              <article class="projeto">
+                <div class="projeto__capa">
+                  {proj.capa ? (
+                    <img
+                      src={`/fotos/${proj.capa}`}
+                      alt={proj.capaAlt?.[lang] ?? proj.capaAlt?.pt ?? ""}
+                      loading="eager"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="projeto__semfoto" aria-hidden="true">
+                      <span class="projeto__seta"></span>
+                    </div>
+                  )}
+                </div>
+
+                <div class="projeto__texto">
+                  <p class="projeto__meta">
+                    <span class={`selo selo--${proj.status}`}>
+                      {p.status[proj.status]}
+                    </span>
+                    {proj.ano && (
+                      <span class="projeto__ano">
+                        {p.rotulos.desde} {proj.ano}
+                      </span>
+                    )}
+                  </p>
+
+                  <h2>{proj.nome}</h2>
+
+                  {resumo ? <p class="lead">{resumo}</p> : <p class="muted">{p.semTexto}</p>}
+
+                  {proj.ods.length > 0 && (
+                    <p class="ods">
+                      <span class="ods__rotulo">{p.rotulos.ods}</span>
+                      {proj.ods.map((o) => (
+                        <span class="ods__num">ODS {o.numero}</span>
+                      ))}
+                    </p>
+                  )}
+
+                  <p class="projeto__acoes">
+                    {temPagina ? (
+                      <a class="btn btn--primary" href={`${base}${proj.slug}/`}>
+                        {p.rotulos.verProjeto}
+                      </a>
+                    ) : (
+                      INSTAGRAM?.url && (
+                        <a
+                          class="btn btn--ghost"
+                          href={INSTAGRAM.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <IconeRede id="instagram" size={18} />
+                          {INSTAGRAM.handle}
+                        </a>
+                      )
+                    )}
+                  </p>
+                </div>
+              </article>
+
+              {/* A galeria só aparece aqui enquanto o projeto não tem página
+                  própria. Com página, ela vive lá e a listagem fica limpa. */}
+              {!temPagina && proj.galeria.length > 0 && (
+                <div class="projeto__galeria">
+                  <Galeria itens={proj.galeria} base="/fotos" lang={lang} />
+                </div>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- ========================== O TIME EM CAMPO ========================== -->
+{
+  FOTOS_CAMPO.length > 0 && (
+    <section class="section section--warm">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">{p.campo.eyebrow}</p>
+          <h2>{p.campo.titulo}</h2>
+          <p class="lead">{p.campo.lead}</p>
+        </div>
+        <Galeria itens={FOTOS_CAMPO} base="/fotos/campo" lang={lang} />
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .topo {
+    background:
+      radial-gradient(70% 130% at 78% 0%, rgba(245, 166, 51, 0.24) 0%, rgba(245, 166, 51, 0) 60%),
+      linear-gradient(180deg, var(--bg-warm) 0%, var(--bg) 100%);
+    padding-block: var(--space-xl) var(--space-l);
+  }
+
+  .topo__inner > * + * { margin-top: var(--space-s); }
+  .topo__inner .lead { max-width: 54ch; }
+
+  .lista {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .projeto {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: var(--space-l);
+    align-items: center;
+  }
+
+  @media (max-width: 820px) {
+    .projeto { grid-template-columns: 1fr; gap: var(--space-m); }
+  }
+
+  .projeto__capa img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--line);
+  }
+
+  /* Enquanto não houver foto de capa, entra um bloco com a seta da marca
+     em vez de um retângulo cinza vazio. */
+  .projeto__semfoto {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(80% 120% at 30% 20%, rgba(245, 166, 51, 0.22) 0%, rgba(245, 166, 51, 0) 62%),
+      var(--bg-warm);
+  }
+
+  .projeto__seta {
+    width: 4.5rem;
+    height: 4.5rem;
+    background: var(--gold);
+    opacity: 0.45;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .projeto__texto > * + * { margin-top: var(--space-xs); }
+  .projeto__texto .lead { max-width: 50ch; }
+
+  .projeto__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.22em 0.7em;
+    border-radius: 999px;
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .selo::before {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .selo--ativo { background: rgba(83, 148, 146, 0.16); color: var(--teal-deep); }
+  .selo--piloto { background: rgba(245, 166, 51, 0.2); color: var(--gold-deep); }
+  .selo--concluido { background: rgba(67, 42, 12, 0.1); color: var(--brown); }
+
+  .projeto__ano {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  .ods {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .ods__rotulo {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: var(--ink-muted);
+    margin-right: 0.25rem;
+  }
+
+  .ods__num {
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.12em 0.65em;
+    font-size: var(--step--1);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .projeto__acoes { margin-top: var(--space-s); }
+
+  .projeto__galeria { margin-top: var(--space-m); }
+</style>
