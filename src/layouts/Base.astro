@@ -35,15 +35,22 @@ const ogImage = new URL("/brand/logo-time.png", Astro.site).href;
     <meta property="og:locale" content={lang === "pt" ? "pt_BR" : "en_US"} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="theme-color" content="#f5a633" />
+    <meta name="theme-color" content="#f2b620" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
+    <!-- Tipografia da identidade: Sora (títulos), Manrope (texto),
+         Yellowtail (assinaturas curtas). -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Manrope:wght@400;500;600;700;800&family=Yellowtail&display=swap"
     />
+
+    <!-- Marca o documento como "com JavaScript" antes de qualquer pintura,
+         para as animações de entrada (.revelar) só esconderem conteúdo
+         quando houver script para revelá-lo depois. -->
+    <script is:inline>document.documentElement.classList.add("js");</script>
   </head>
 
   <body>
@@ -56,18 +63,37 @@ const ogImage = new URL("/brand/logo-time.png", Astro.site).href;
 
     <script>
       /**
-       * Contagem crescente dos números marcados com [data-contar].
+       * 1) Entrada suave: elementos com .revelar ganham .visivel quando
+       *    entram na tela. Cada um anima uma vez só.
+       * 2) Contagem crescente dos números marcados com [data-contar].
        *
-       * O HTML já chega do servidor com o valor final escrito. O script
-       * zera o número e o faz subir até o valor real quando o bloco entra
-       * na tela, cada número começando um pouco depois do anterior.
-       * Proteções:
-       *   - sem JavaScript, o valor final aparece normalmente;
-       *   - cada número anima uma única vez.
+       * Tudo aqui é aprimoramento: sem JavaScript, o conteúdo e os números
+       * finais aparecem normalmente.
        */
+      const temObservador = "IntersectionObserver" in window;
+
+      // ---------- 1. entrada suave ----------
+      const reveladores = document.querySelectorAll(".revelar");
+      if (reveladores.length > 0 && temObservador) {
+        const obs = new IntersectionObserver(
+          (entradas) => {
+            for (const e of entradas) {
+              if (!e.isIntersecting) continue;
+              e.target.classList.add("visivel");
+              obs.unobserve(e.target);
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+        );
+        for (const el of reveladores) obs.observe(el);
+      } else {
+        for (const el of reveladores) el.classList.add("visivel");
+      }
+
+      // ---------- 2. contagem dos números ----------
       const alvos = document.querySelectorAll("[data-contar]");
 
-      if (alvos.length > 0 && "IntersectionObserver" in window) {
+      if (alvos.length > 0 && temObservador) {
         const planos = new Map();
 
         for (const el of alvos) {

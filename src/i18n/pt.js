@@ -38,7 +38,9 @@ export default {
     },
     hero: {
       eyebrow: "Time Enactus · IFMA Campus Imperatriz",
-      titulo: "Transformamos ideias em negócios que mudam a nossa região.",
+      assinatura: "O Maranhão nos inspira.",
+      titulo: "O impacto nos move.",
+      fotoNota: "ENEB 2026",
       lead: "Somos estudantes do Instituto Federal do Maranhão que usam empreendedorismo para enfrentar problemas socioambientais reais de Imperatriz e do sul do Maranhão. Fazemos parte da Enactus, uma rede global de mais de 50 anos presente em mais de 30 países.",
       ctaPrimaria: "Conheça nossos projetos",
       ctaSecundaria: "Quero fazer parte",
@@ -64,6 +66,7 @@ export default {
       titulo: "Campeões nacionais no ano de estreia.",
       lead: "Levamos o Solo que Gera ao Encontro Nacional Enactus Brasil, em Campo Grande, e voltamos com dois títulos na primeira vez que competimos.",
       imprensa: "Na imprensa",
+      fotoLegenda: "No palco do ENEB 2026, em Campo Grande.",
     },
 
     comoAtuamos: {
@@ -141,6 +144,12 @@ export default {
           cta: "Falar com o time",
         },
       ],
+    },
+
+    registros: {
+      eyebrow: "Registros",
+      titulo: "Do campus para a comunidade, em fotos",
+      lead: "Bastidores de produção, visitas e conquistas. As fotos são as nossas, sem imagem de banco.",
     },
 
     instagram: {

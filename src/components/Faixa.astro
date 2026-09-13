@@ -1,0 +1,69 @@
+---
+/**
+ * Faixa gráfica fluida que atravessa a costura entre duas seções.
+ *
+ * Uso: coloque <Faixa /> ENTRE duas seções. Ela não ocupa altura no fluxo;
+ * a curva fica metade sobre a seção de cima e metade sobre a de baixo,
+ * criando a sensação de continuidade durante a rolagem.
+ *
+ * Props:
+ *   cor   — "amarelo" (padrão) | "marinho" | "marrom" | "areia"
+ *   virar — espelha horizontalmente, para a curva não ficar sempre igual
+ */
+const { cor = "amarelo", virar = false } = Astro.props;
+---
+
+<div class={`faixa faixa--${cor} ${virar ? "faixa--virada" : ""}`} aria-hidden="true">
+  <svg viewBox="0 0 1440 160" preserveAspectRatio="none" focusable="false">
+    <path
+      d="M -80 112 C 200 30, 420 34, 700 92 S 1160 176, 1520 62"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="30"
+      stroke-linecap="round"
+    />
+  </svg>
+</div>
+
+<style>
+  .faixa {
+    position: relative;
+    height: 0;
+    z-index: 3;
+    pointer-events: none;
+    color: var(--amarelo);
+  }
+
+  .faixa--marinho { color: var(--marinho); }
+  .faixa--marrom { color: var(--marrom); }
+  .faixa--areia { color: var(--areia); }
+
+  .faixa svg {
+    position: absolute;
+    left: 0;
+    top: -80px;
+    width: 100%;
+    height: 160px;
+    overflow: visible;
+    opacity: 0.95;
+  }
+
+  .faixa--virada svg { transform: scaleX(-1); }
+
+  /* Deriva lenta, quase imperceptível, para a faixa parecer viva. */
+  @media (prefers-reduced-motion: no-preference) {
+    .faixa svg path {
+      animation: faixa-deriva 16s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes faixa-deriva {
+    from { transform: translateX(-14px); }
+    to { transform: translateX(14px); }
+  }
+
+  @media (max-width: 720px) {
+    .faixa svg { top: -50px; height: 100px; }
+    .faixa svg path { stroke-width: 22; }
+  }
+</style>

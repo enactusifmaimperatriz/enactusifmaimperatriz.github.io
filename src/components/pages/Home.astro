@@ -3,63 +3,105 @@ import { t, href } from "../../i18n/index.js";
 import { GLOBAL, TIME } from "../../data/rede-enactus.js";
 import { INSTAGRAM } from "../../data/redes.js";
 import { PROJETOS } from "../../data/projetos.js";
+import { FOTOS_CAMPO } from "../../data/fotos-campo.js";
 import { CONQUISTAS, IMPRENSA, FOTO_CONQUISTA } from "../../data/conquistas.js";
 import IconeRede from "../IconeRede.astro";
+import Faixa from "../Faixa.astro";
+import Cocais from "../Cocais.astro";
+import Galeria from "../Galeria.astro";
 
 const { lang } = Astro.props;
 const c = t(lang);
 const h = c.home;
 
 // Só mostra o quadro de números quando existir número de verdade.
-// Enquanto os valores forem "—" em src/data/rede-enactus.js, o site exibe
-// apenas o aviso de que os dados estão sendo consolidados.
 const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
+
+// Foto do time que acompanha a marca no topo (a primeira de "o time em campo").
+const fotoHero = FOTOS_CAMPO[0] ?? null;
+
+// Registros: capa e galeria dos projetos, mais o time em campo. Até seis.
+const registros = [
+  ...PROJETOS.flatMap((p) => [
+    p.capa
+      ? { arquivo: p.capa, alt: p.capaAlt, legenda: { pt: p.nome, en: p.nome } }
+      : null,
+    ...(p.galeria ?? []),
+  ]),
+  ...FOTOS_CAMPO.map((f) => ({ ...f, arquivo: `campo/${f.arquivo}` })),
+]
+  .filter(Boolean)
+  .slice(0, 6);
 ---
 
 <!-- ============================== HERO ============================== -->
 <section class="hero">
-  <div class="hero__fundo" aria-hidden="true"></div>
   <div class="wrap hero__inner">
     <div class="hero__texto">
-      <p class="eyebrow">{h.hero.eyebrow}</p>
-      <h1>{h.hero.titulo}</h1>
-      <p class="lead">{h.hero.lead}</p>
-      <div class="hero__acoes">
+      <p class="eyebrow revelar">{h.hero.eyebrow}</p>
+      <p class="assinatura hero__assinatura revelar" data-atraso="1">{h.hero.assinatura}</p>
+      <h1 class="revelar" data-atraso="1">{h.hero.titulo}</h1>
+      <p class="lead revelar" data-atraso="2">{h.hero.lead}</p>
+      <div class="hero__acoes revelar" data-atraso="3">
         <a class="btn btn--primary" href={href("projects", lang)}>{h.hero.ctaPrimaria}</a>
-        <a class="btn btn--ghost" href={href("contact", lang)}>{h.hero.ctaSecundaria}</a>
+        <a class="btn btn--marinho" href={`${href("contact", lang)}#entrar`}>{h.hero.ctaSecundaria}</a>
       </div>
     </div>
 
-    <figure class="hero__marca">
+    <div class="hero__visual revelar" data-atraso="1">
+      <!-- curva de território: forma orgânica em amarelo, atrás da composição -->
+      <svg class="hero__curva" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
+        <path d="M 468 58 C 562 108 604 226 572 326 C 540 426 472 522 352 562 C 232 602 102 562 48 452 C -6 342 28 198 118 118 C 208 38 378 10 468 58 Z" />
+      </svg>
+
+      {
+        fotoHero && (
+          <figure class="polaroid hero__polaroid">
+            <img
+              src={`/fotos/campo/${fotoHero.arquivo}`}
+              alt={fotoHero.alt?.[lang] ?? fotoHero.alt?.pt ?? ""}
+              width="953"
+              height="565"
+              fetchpriority="high"
+              decoding="async"
+            />
+            <figcaption class="assinatura">{h.hero.fotoNota}</figcaption>
+          </figure>
+        )
+      }
+
       <img
+        class="hero__marca"
         src="/brand/logo-time.png"
         alt={h.hero.creditoImagem}
         width="640"
         height="609"
         fetchpriority="high"
       />
-    </figure>
+    </div>
   </div>
 </section>
+
+<Faixa cor="amarelo" />
 
 <!-- =========================== CONQUISTAS ===========================
      Vem logo depois do topo de propósito: é a credencial mais forte do
      time e o que faz um visitante decidir continuar lendo. -->
-<section class="section section--ink conquistas">
+<section class="section section--marinho conquistas">
   <div class="wrap conquistas__inner">
     <div class="conquistas__texto">
-      <p class="eyebrow">{h.conquistas.eyebrow}</p>
-      <h2>{h.conquistas.titulo}</h2>
-      <p class="lead">{h.conquistas.lead}</p>
+      <p class="eyebrow revelar">{h.conquistas.eyebrow}</p>
+      <h2 class="revelar" data-atraso="1">{h.conquistas.titulo}</h2>
+      <p class="lead revelar" data-atraso="2">{h.conquistas.lead}</p>
 
       <ul class="premios">
         {
-          CONQUISTAS.map((c) => (
-            <li class="premio">
-              <span class="premio__ano">{c.ano}</span>
-              <h3>{c.titulo[lang] ?? c.titulo.pt}</h3>
-              <p class="premio__onde">{c.onde[lang] ?? c.onde.pt}</p>
-              <p class="premio__texto">{c.texto[lang] ?? c.texto.pt}</p>
+          CONQUISTAS.map((cq, i) => (
+            <li class="premio revelar" data-atraso={String(Math.min(i + 1, 3))}>
+              <span class="premio__ano">{cq.ano}</span>
+              <h3>{cq.titulo[lang] ?? cq.titulo.pt}</h3>
+              <p class="premio__onde">{cq.onde[lang] ?? cq.onde.pt}</p>
+              <p class="premio__texto">{cq.texto[lang] ?? cq.texto.pt}</p>
             </li>
           ))
         }
@@ -67,7 +109,7 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
 
       {
         IMPRENSA.length > 0 && (
-          <div class="imprensa">
+          <div class="imprensa revelar" data-atraso="3">
             <p class="imprensa__rotulo">{h.conquistas.imprensa}</p>
             <ul>
               {IMPRENSA.map((m) => (
@@ -84,20 +126,20 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
       }
     </div>
 
-    <figure class="conquistas__foto">
+    <figure class="polaroid conquistas__foto revelar" data-atraso="2">
       <img
         src={`/fotos/${FOTO_CONQUISTA.arquivo}`}
         alt={FOTO_CONQUISTA.alt[lang] ?? FOTO_CONQUISTA.alt.pt}
         loading="lazy"
         decoding="async"
       />
+      <figcaption>{h.conquistas.fotoLegenda}</figcaption>
     </figure>
   </div>
 </section>
 
 <!-- ==================== NÚMEROS DO TIME ====================
-     Só aparece quando existir número de verdade em rede-enactus.js.
-     Hoje o time está em fase de projeção, então a seção fica fora. -->
+     Só aparece quando existir número de verdade em rede-enactus.js. -->
 {
   numerosTime.length > 0 && (
     <section class="section-tight">
@@ -121,18 +163,19 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
 }
 
 <!-- =========================== COMO ATUAMOS =========================== -->
-<section class="section section--warm">
-  <div class="wrap">
+<section class="section section--areia metodo">
+  <Cocais canto="direita" cor="oliva" />
+  <div class="wrap metodo__inner">
     <div class="section-head">
-      <p class="eyebrow">{h.comoAtuamos.eyebrow}</p>
-      <h2>{h.comoAtuamos.titulo}</h2>
-      <p class="lead">{h.comoAtuamos.lead}</p>
+      <p class="eyebrow revelar">{h.comoAtuamos.eyebrow}</p>
+      <h2 class="revelar" data-atraso="1">{h.comoAtuamos.titulo}</h2>
+      <p class="lead revelar" data-atraso="2">{h.comoAtuamos.lead}</p>
     </div>
 
     <ol class="etapas">
       {
-        h.comoAtuamos.etapas.map((e) => (
-          <li class="etapa">
+        h.comoAtuamos.etapas.map((e, i) => (
+          <li class="etapa revelar" data-atraso={String(Math.min(i, 3))}>
             <span class="etapa__num" aria-hidden="true">{e.numero}</span>
             <h3>{e.titulo}</h3>
             <p>{e.texto}</p>
@@ -144,13 +187,13 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
 </section>
 
 <!-- ============================== A REDE ============================== -->
-<section class="section section--ink">
+<section class="section section--profundo">
   <div class="wrap rede">
     <div class="rede__texto">
-      <p class="eyebrow">{h.redePreview.eyebrow}</p>
-      <h2>{h.redePreview.titulo}</h2>
-      <p>{h.redePreview.texto}</p>
-      <p>
+      <p class="eyebrow revelar">{h.redePreview.eyebrow}</p>
+      <h2 class="revelar" data-atraso="1">{h.redePreview.titulo}</h2>
+      <p class="revelar" data-atraso="2">{h.redePreview.texto}</p>
+      <p class="revelar" data-atraso="3">
         <a class="btn btn--primary" href={href("enactus", lang)}>{h.redePreview.cta}</a>
       </p>
     </div>
@@ -172,9 +215,9 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
 <section class="section">
   <div class="wrap">
     <div class="section-head">
-      <p class="eyebrow">{h.projetosPreview.eyebrow}</p>
-      <h2>{h.projetosPreview.titulo}</h2>
-      <p class="lead">{h.projetosPreview.lead}</p>
+      <p class="eyebrow revelar">{h.projetosPreview.eyebrow}</p>
+      <h2 class="revelar" data-atraso="1">{h.projetosPreview.titulo}</h2>
+      <p class="lead revelar" data-atraso="2">{h.projetosPreview.lead}</p>
     </div>
 
     <ul class="previa">
@@ -182,11 +225,24 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
         PROJETOS.map((proj) => {
           const resumo = proj.resumo?.[lang] || proj.resumo?.pt || "";
           return (
-            <li>
+            <li class="revelar" data-atraso="2">
               <a class="card previa__card" href={href("projects", lang)}>
-                <span class={`selo selo--${proj.status}`}>{c.projetos.status[proj.status]}</span>
-                <h3>{proj.nome}</h3>
-                <p>{resumo || h.projetosPreview.vazio}</p>
+                {proj.capa && (
+                  <figure class="recorte previa__capa">
+                    <img
+                      src={`/fotos/${proj.capa}`}
+                      alt={proj.capaAlt?.[lang] ?? proj.capaAlt?.pt ?? ""}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </figure>
+                )}
+                <div class="previa__texto">
+                  <span class={`selo selo--${proj.status}`}>{c.projetos.status[proj.status]}</span>
+                  <h3>{proj.nome}</h3>
+                  <p>{resumo || h.projetosPreview.vazio}</p>
+                  <span class="previa__link">{c.projetos.rotulos.verProjeto} &rarr;</span>
+                </div>
               </a>
             </li>
           );
@@ -194,30 +250,48 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
       }
     </ul>
 
-    <p class="previa__acao">
+    <p class="previa__acao revelar" data-atraso="3">
       <a class="btn btn--ghost" href={href("projects", lang)}>{h.projetosPreview.cta}</a>
     </p>
   </div>
 </section>
 
+<Faixa cor="marinho" virar />
+
+<!-- ============================= REGISTROS ============================= -->
+{
+  registros.length > 0 && (
+    <section class="section section--areia">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow revelar">{h.registros.eyebrow}</p>
+          <h2 class="revelar" data-atraso="1">{h.registros.titulo}</h2>
+          <p class="lead revelar" data-atraso="2">{h.registros.lead}</p>
+        </div>
+        <Galeria itens={registros} base="/fotos" lang={lang} estilo="polaroid" />
+      </div>
+    </section>
+  )
+}
+
 <!-- ============================= PARTICIPE ============================= -->
-<section class="section section--warm">
+<section class="section">
   <div class="wrap">
     <div class="section-head">
-      <p class="eyebrow">{h.participe.eyebrow}</p>
-      <h2>{h.participe.titulo}</h2>
+      <p class="eyebrow revelar">{h.participe.eyebrow}</p>
+      <h2 class="revelar" data-atraso="1">{h.participe.titulo}</h2>
     </div>
 
     <div class="grid caminhos">
       {
         h.participe.caminhos.map((cam, i) => (
-          <article class="card caminho">
+          <article class="card caminho revelar" data-atraso={String(i + 1)}>
             <p class="caminho__publico">{cam.publico}</p>
             <h3>{cam.titulo}</h3>
             <p>{cam.texto}</p>
             <p>
               <a
-                class={i === 0 ? "btn btn--primary" : "btn btn--ghost"}
+                class={i === 0 ? "btn btn--primary" : "btn btn--marinho"}
                 href={i === 0 ? `${href("contact", lang)}#entrar` : href("contact", lang)}
               >
                 {cam.cta}
@@ -233,23 +307,23 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
 <!-- ============================= INSTAGRAM ============================= -->
 {
   INSTAGRAM?.url && (
-    <section class="section-tight insta">
+    <section class="section section--amarelo insta">
       <div class="wrap insta__inner">
         <div class="insta__texto">
-          <p class="eyebrow">{h.instagram.eyebrow}</p>
-          <h2>{h.instagram.titulo}</h2>
-          <p>{h.instagram.texto}</p>
+          <p class="eyebrow revelar">{h.instagram.eyebrow}</p>
+          <h2 class="revelar" data-atraso="1">{h.instagram.titulo}</h2>
+          <p class="revelar" data-atraso="2">{h.instagram.texto}</p>
         </div>
 
         <a
-          class="btn btn--primary insta__cta"
+          class="btn btn--profundo insta__cta revelar"
+          data-atraso="2"
           href={INSTAGRAM.url}
           target="_blank"
           rel="noopener noreferrer"
         >
           <IconeRede id="instagram" size={20} />
           {h.instagram.cta}
-          <span class="insta__handle">{INSTAGRAM.handle}</span>
         </a>
       </div>
     </section>
@@ -261,43 +335,20 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   .hero {
     position: relative;
     overflow: hidden;
-    padding-block: var(--space-2xl) var(--space-2xl);
-  }
-
-  .hero__fundo {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(90% 120% at 88% 8%, rgba(245, 166, 51, 0.28) 0%, rgba(245, 166, 51, 0) 58%),
-      radial-gradient(70% 100% at 4% 92%, rgba(83, 148, 146, 0.18) 0%, rgba(83, 148, 146, 0) 60%),
-      linear-gradient(175deg, var(--bg-warm) 0%, var(--bg) 62%);
-  }
-
-  .hero__fundo::after {
-    /* seta triangular derivada da marca, como marca d'água */
-    content: "";
-    position: absolute;
-    right: -14%;
-    bottom: -34%;
-    width: min(58vw, 40rem);
-    aspect-ratio: 1;
-    background: var(--gold);
-    opacity: 0.08;
-    clip-path: polygon(0 0, 100% 50%, 0 100%);
-    transform: rotate(-14deg);
-    transform-origin: 30% 50%;
+    padding-block: var(--space-xl) var(--space-2xl);
   }
 
   .hero__inner {
-    position: relative;
     display: grid;
     gap: var(--space-xl);
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
     align-items: center;
   }
 
   .hero__texto > * + * { margin-top: var(--space-s); }
-  .hero__texto .lead { max-width: 54ch; }
+  .hero__assinatura { margin-top: var(--space-m); }
+  .hero__texto h1 { font-size: var(--step-5); margin-top: var(--space-2xs); }
+  .hero__texto .lead { max-width: 52ch; }
 
   .hero__acoes {
     display: flex;
@@ -306,14 +357,44 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     margin-top: var(--space-m);
   }
 
-  .hero__marca {
-    display: grid;
-    place-items: center;
+  /* Composição: curva amarela ao fundo, polaroide do time por cima,
+     e a marca oficial (intacta) flutuando na frente. */
+  .hero__visual {
+    position: relative;
+    width: 100%;
+    max-width: 34rem;
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
   }
 
-  .hero__marca img {
-    width: min(100%, 26rem);
-    filter: drop-shadow(0 18px 38px rgba(67, 42, 12, 0.16));
+  .hero__curva {
+    position: absolute;
+    left: -6%;
+    top: -4%;
+    width: 112%;
+    height: 108%;
+    fill: var(--amarelo);
+    z-index: 0;
+  }
+
+  .hero__polaroid {
+    position: absolute;
+    top: 5%;
+    right: 1%;
+    width: 68%;
+    --inclinacao: -4deg;
+    z-index: 1;
+  }
+
+  .hero__polaroid img { aspect-ratio: 16 / 10; }
+
+  .hero__marca {
+    position: absolute;
+    left: 0;
+    bottom: 3%;
+    width: 46%;
+    z-index: 2;
+    filter: drop-shadow(0 16px 30px rgba(46, 19, 13, 0.28));
     animation: flutuar 9s var(--ease) infinite;
   }
 
@@ -323,9 +404,10 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   }
 
   @media (max-width: 880px) {
-    .hero__inner { grid-template-columns: 1fr; }
-    .hero__marca { order: -1; }
-    .hero__marca img { width: min(72%, 15rem); }
+    .hero { padding-block: var(--space-l) var(--space-xl); }
+    .hero__inner { grid-template-columns: 1fr; gap: var(--space-l); }
+    .hero__visual { order: -1; max-width: 22rem; }
+    .hero__texto h1 { font-size: var(--step-4); }
   }
 
   /* ---------------------------- NÚMEROS ---------------------------- */
@@ -347,8 +429,9 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
 
   .numeros__item dd {
     margin: 0.1em 0 0;
+    font-family: var(--font-display);
     font-size: var(--step-3);
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--ink);
     line-height: 1;
@@ -369,13 +452,13 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   .conquistas__texto > * + * { margin-top: var(--space-s); }
   .conquistas__texto .lead { color: var(--ink-on-dark-muted); max-width: 48ch; }
 
-  .conquistas__foto img {
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
-    border-radius: var(--radius-m);
-    border: 1px solid rgba(247, 237, 224, 0.18);
+  .conquistas__foto {
+    --inclinacao: 2.5deg;
+    max-width: 30rem;
+    margin-inline: auto;
   }
+
+  .conquistas__foto img { aspect-ratio: 3 / 2; }
 
   .premios {
     list-style: none;
@@ -386,22 +469,23 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   }
 
   .premio {
-    border-left: 3px solid var(--gold);
+    border-left: 3px solid var(--amarelo);
     padding-left: var(--space-s);
   }
 
   .premio__ano {
     display: block;
+    font-family: var(--font-display);
     font-size: var(--step--1);
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: 0.12em;
-    color: var(--gold);
+    color: var(--amarelo);
   }
 
   .premio h3 { color: var(--ink-on-dark); margin-top: 0.1em; }
 
   .premio__onde {
-    color: var(--gold);
+    color: var(--amarelo);
     font-size: var(--step--1);
     font-weight: 600;
     margin-top: 0.15em;
@@ -419,7 +503,7 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   .imprensa {
     margin-top: var(--space-m);
     padding-top: var(--space-s);
-    border-top: 1px solid rgba(247, 237, 224, 0.18);
+    border-top: 1px solid rgba(250, 244, 234, 0.18);
   }
 
   .imprensa__rotulo {
@@ -427,7 +511,7 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--amarelo);
     margin-bottom: var(--space-2xs);
   }
 
@@ -443,7 +527,7 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     transition: background-color 0.18s var(--ease);
   }
 
-  .imprensa a:hover { background: rgba(245, 166, 51, 0.14); }
+  .imprensa a:hover { background: rgba(242, 182, 32, 0.14); }
 
   .imprensa__veiculo {
     font-size: 0.76rem;
@@ -459,9 +543,12 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     line-height: 1.4;
   }
 
-  .imprensa a:hover .imprensa__titulo { color: var(--gold); }
+  .imprensa a:hover .imprensa__titulo { color: var(--amarelo); }
 
-  /* ----------------------------- ETAPAS ----------------------------- */
+  /* ----------------------------- MÉTODO ----------------------------- */
+  .metodo { overflow: hidden; }
+  .metodo__inner { position: relative; z-index: 1; }
+
   /* 4 colunas no desktop, 2 no tablet, 1 no celular.
      Evita a quebra 3+1, que deixa uma etapa órfã na segunda linha. */
   .etapas {
@@ -470,7 +557,6 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     grid-template-columns: repeat(4, minmax(0, 1fr));
     list-style: none;
     padding: 0;
-    counter-reset: etapa;
   }
 
   @media (max-width: 1000px) {
@@ -484,17 +570,18 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   .etapa {
     position: relative;
     padding-top: var(--space-m);
-    border-top: 3px solid var(--gold);
+    border-top: 3px solid var(--amarelo);
   }
 
   .etapa > * + * { margin-top: var(--space-2xs); }
 
   .etapa__num {
     display: block;
+    font-family: var(--font-display);
     font-size: var(--step--1);
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: 0.12em;
-    color: var(--gold-deep);
+    color: var(--marrom);
   }
 
   /* ------------------------------ REDE ------------------------------ */
@@ -515,14 +602,15 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
   }
 
   .rede__numeros > div {
-    border-left: 3px solid var(--gold);
+    border-left: 3px solid var(--amarelo);
     padding-left: var(--space-xs);
   }
 
   .rede__numeros dd {
     margin: 0;
+    font-family: var(--font-display);
     font-size: var(--step-2);
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--ink-on-dark);
     line-height: 1.05;
@@ -546,11 +634,32 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     padding: 0;
     display: grid;
     gap: var(--space-m);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
   }
 
-  .previa__card { padding: var(--space-m); }
-  .previa__card > * + * { margin-top: var(--space-xs); }
+  .previa__card {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--space-l);
+    align-items: center;
+    padding: var(--space-m);
+  }
+
+  .previa__card > * + * { margin-top: 0; }
+
+  @media (max-width: 760px) {
+    .previa__card { grid-template-columns: 1fr; gap: var(--space-m); }
+  }
+
+  .previa__capa img { aspect-ratio: 4 / 3; }
+
+  .previa__texto > * + * { margin-top: var(--space-xs); }
+
+  .previa__link {
+    display: inline-block;
+    margin-top: var(--space-s);
+    font-weight: 700;
+    color: var(--marinho);
+  }
 
   .previa__acao { margin-top: var(--space-m); }
 
@@ -574,9 +683,9 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     background: currentColor;
   }
 
-  .selo--ativo { background: rgba(83, 148, 146, 0.16); color: var(--teal-deep); }
-  .selo--piloto { background: rgba(245, 166, 51, 0.2); color: var(--gold-deep); }
-  .selo--concluido { background: rgba(67, 42, 12, 0.1); color: var(--brown); }
+  .selo--ativo { background: rgba(38, 76, 107, 0.12); color: var(--petroleo); }
+  .selo--piloto { background: rgba(242, 182, 32, 0.22); color: var(--marrom); }
+  .selo--concluido { background: rgba(111, 57, 26, 0.12); color: var(--marrom); }
 
   /* ---------------------------- CAMINHOS ---------------------------- */
   .caminhos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
@@ -586,7 +695,7 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--teal-deep);
+    color: var(--petroleo);
   }
 
   .caminho > p:last-child { margin-top: var(--space-s); }
@@ -597,32 +706,16 @@ const numerosTime = TIME.filter((n) => n.valor && n.valor !== "—");
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-m);
-    padding: var(--space-l);
-    border-radius: var(--radius-l);
-    border: 1px solid var(--line);
-    background:
-      radial-gradient(80% 160% at 12% 0%, rgba(245, 166, 51, 0.22) 0%, rgba(245, 166, 51, 0) 62%),
-      radial-gradient(70% 140% at 95% 100%, rgba(83, 148, 146, 0.16) 0%, rgba(83, 148, 146, 0) 60%),
-      var(--bg-raised);
+    gap: var(--space-l);
   }
 
-  .insta__texto { max-width: 46ch; }
+  .insta__texto { max-width: 52ch; }
   .insta__texto > * + * { margin-top: var(--space-xs); }
+  .insta__texto h2 { font-size: var(--step-3); }
 
   .insta__cta { flex-shrink: 0; }
 
-  .insta__handle {
-    padding-left: 0.55em;
-    margin-left: 0.35em;
-    border-left: 1px solid rgba(42, 27, 8, 0.28);
-    font-weight: 600;
-    opacity: 0.85;
-  }
-
   @media (max-width: 620px) {
-    .insta__inner { padding: var(--space-m); }
     .insta__cta { width: 100%; }
-    .insta__handle { display: none; }
   }
 </style>

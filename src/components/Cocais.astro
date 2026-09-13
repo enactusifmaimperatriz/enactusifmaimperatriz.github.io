@@ -1,0 +1,58 @@
+---
+/**
+ * Elemento gráfico regional: copa de palmeira de babaçu, abstrata e plana,
+ * inspirada nos cocais maranhenses. Uso decorativo, um por seção no máximo.
+ *
+ * A seção que recebe o elemento precisa de `position: relative` e
+ * `overflow: hidden`, porque a copa sangra para fora do canto.
+ *
+ * Props:
+ *   canto — "direita" (padrão) | "esquerda"
+ *   cor   — "oliva" (padrão) | "marrom" | "amarelo" | "creme"
+ */
+const { canto = "direita", cor = "oliva" } = Astro.props;
+
+// Sete folhas em leque, cada uma um losango alongado com a ponta suave.
+const angulos = [-78, -52, -28, -6, 18, 44, 70];
+---
+
+<svg
+  class={`cocais cocais--${canto} cocais--${cor}`}
+  viewBox="-220 -230 440 260"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    angulos.map((a, i) => (
+      <path
+        d="M0 0 C -14 -60, -12 -130, 0 -200 C 12 -130, 14 -60, 0 0 Z"
+        transform={`rotate(${a}) scale(${1 - Math.abs(i - 3) * 0.06})`}
+      />
+    ))
+  }
+  <circle cx="0" cy="0" r="9" />
+</svg>
+
+<style>
+  .cocais {
+    position: absolute;
+    bottom: -3.5rem;
+    width: min(46vw, 30rem);
+    height: auto;
+    pointer-events: none;
+    z-index: 0;
+    fill: var(--oliva);
+    opacity: 0.22;
+  }
+
+  .cocais--direita { right: -4rem; }
+  .cocais--esquerda { left: -4rem; transform: scaleX(-1); }
+
+  .cocais--marrom { fill: var(--marrom); opacity: 0.16; }
+  .cocais--amarelo { fill: var(--amarelo); opacity: 0.35; }
+  .cocais--creme { fill: var(--creme); opacity: 0.12; }
+
+  @media (max-width: 720px) {
+    .cocais { width: 70vw; bottom: -2rem; }
+  }
+</style>

@@ -20,7 +20,8 @@ para editar tudo pelo navegador.
 | Qualquer texto do site em português | `src/i18n/pt.js` |
 | Qualquer texto do site em inglês | `src/i18n/en.js` |
 | Os números da rede Enactus e do time | `src/data/rede-enactus.js` |
-| As cores do site | `src/styles/tokens.css` |
+| As cores e as fontes do site | `src/styles/tokens.css` |
+| Molduras de foto, botões, seções | `src/styles/global.css` |
 | Instagram e e-mail do time | `src/data/redes.js` |
 | As conquistas e as matérias na imprensa | `src/data/conquistas.js` |
 | Os projetos e as fotos de projeto | `src/data/projetos.js` |
@@ -143,6 +144,34 @@ Estas são obrigatórias. Nenhuma delas é opcional.
       Enactus Worldwide. Esse aviso não é formalidade: o Manual de Marca
       Enactus Brasil 26-27 exige essa distinção, e descumprir pode custar ao
       time a autorização de uso da marca.
+
+---
+
+## 5b. Identidade visual (versão Instagram)
+
+A partir de 13/09/2026 o site segue a identidade aprovada para as publicações
+do time: paleta com amarelo (#F2B620), marrom (#6F391A e #2E130D), azul-marinho
+(#16385F), azul-petróleo, verde-oliva, areia e creme. As fontes são **Sora** em
+títulos e números, **Manrope** em textos, menus e botões, e **Yellowtail** só
+em palavras curtas de assinatura (nunca em parágrafo ou menu).
+
+Tudo isso mora em `src/styles/tokens.css`. Os componentes usam nomes de função
+(`--gold`, `--bg`, `--ink`) apontando para a paleta, então mudar a identidade é
+remapear ali, sem tocar nas páginas.
+
+Molduras de foto (`src/styles/global.css`): **.polaroid** para bastidores,
+galerias e conquistas, e **.recorte** (papel recortado) para capas de projeto.
+As duas envolvem um `<img>` comum, então trocar a foto é trocar o arquivo.
+Use com moderação: nem toda foto precisa de moldura.
+
+Elementos gráficos: `Faixa.astro` é a faixa fluida que atravessa a costura
+entre seções; `Cocais.astro` é a copa de babaçu abstrata, uma por seção no
+máximo. Nada de ponte, azulejo ou onda decorativa espalhada: a ponte só existe
+na logo oficial, que fica intacta.
+
+Sobre a tipografia oficial da Enactus (Source Sans Pro): ela vale para a logo
+e materiais oficiais da rede. A logo no site é imagem e não muda. O restante
+acompanha a identidade das publicações do time, que já foi aprovada.
 
 ---
 

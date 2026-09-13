@@ -37,7 +37,9 @@ export default {
     },
     hero: {
       eyebrow: "Enactus Team · IFMA Imperatriz Campus",
-      titulo: "We turn ideas into businesses that change our region.",
+      assinatura: "Maranhão inspires us.",
+      titulo: "Impact moves us.",
+      fotoNota: "ENEB 2026",
       lead: "We are students at the Federal Institute of Maranhão using entrepreneurship to tackle real social and environmental problems in Imperatriz and southern Maranhão, Brazil. We are part of Enactus, a global network with over 50 years of history and a presence in more than 30 countries.",
       ctaPrimaria: "See our projects",
       ctaSecundaria: "Join the team",
@@ -63,6 +65,7 @@ export default {
       titulo: "National champions in our debut year.",
       lead: "We took Solo que Gera to the Enactus Brazil National Meeting in Campo Grande and came back with two titles the first time we ever competed.",
       imprensa: "In the press",
+      fotoLegenda: "On stage at ENEB 2026, in Campo Grande.",
     },
 
     comoAtuamos: {
@@ -140,6 +143,12 @@ export default {
           cta: "Talk to the team",
         },
       ],
+    },
+
+    registros: {
+      eyebrow: "Records",
+      titulo: "From campus to community, in photos",
+      lead: "Production behind the scenes, visits and achievements. The photos are our own, no stock imagery.",
     },
 
     instagram: {

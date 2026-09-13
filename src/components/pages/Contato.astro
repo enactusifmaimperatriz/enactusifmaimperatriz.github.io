@@ -3,6 +3,7 @@ import { t } from "../../i18n/index.js";
 import { REDES_ATIVAS, INSTAGRAM } from "../../data/redes.js";
 import { GESTAO } from "../../data/gestao.js";
 import IconeRede from "../IconeRede.astro";
+import Cocais from "../Cocais.astro";
 
 const { lang } = Astro.props;
 const c = t(lang);
@@ -13,6 +14,7 @@ const canais = REDES_ATIVAS.filter((r) => k.canais.itens[r.id]);
 ---
 
 <section class="topo">
+  <Cocais canto="direita" cor="marrom" />
   <div class="wrap topo__inner">
     <p class="eyebrow">{k.hero.eyebrow}</p>
     <h1>{k.hero.titulo}</h1>
@@ -119,12 +121,15 @@ const canais = REDES_ATIVAS.filter((r) => k.canais.itens[r.id]);
 
 <style>
   .topo {
+    position: relative;
+    overflow: hidden;
     background:
-      radial-gradient(70% 130% at 78% 0%, rgba(245, 166, 51, 0.24) 0%, rgba(245, 166, 51, 0) 60%),
+      radial-gradient(70% 130% at 78% 0%, rgba(242, 182, 32, 0.24) 0%, rgba(242, 182, 32, 0) 60%),
       linear-gradient(180deg, var(--bg-warm) 0%, var(--bg) 100%);
     padding-block: var(--space-xl) var(--space-l);
   }
 
+  .topo__inner { position: relative; z-index: 1; }
   .topo__inner > * + * { margin-top: var(--space-s); }
   .topo__inner .lead { max-width: 50ch; }
 

@@ -43,12 +43,14 @@ const fotosRestantes = fotos.slice(blocos.length);
 {
   projeto.capa && (
     <div class="wrap capa">
-      <img
-        src={`/fotos/${projeto.capa}`}
-        alt={projeto.capaAlt?.[lang] ?? projeto.capaAlt?.pt ?? ""}
-        fetchpriority="high"
-        decoding="async"
-      />
+      <figure class="recorte">
+        <img
+          src={`/fotos/${projeto.capa}`}
+          alt={projeto.capaAlt?.[lang] ?? projeto.capaAlt?.pt ?? ""}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
     </div>
   )
 }
@@ -72,7 +74,7 @@ const fotosRestantes = fotos.slice(blocos.length);
           </div>
 
           {b.foto && (
-            <figure class="bloco__foto">
+            <figure class="bloco__foto polaroid">
               <img
                 src={`/fotos/${b.foto.arquivo}`}
                 alt={b.foto.alt?.[lang] ?? b.foto.alt?.pt ?? ""}
@@ -193,7 +195,7 @@ const fotosRestantes = fotos.slice(blocos.length);
      conquistado, e estes números ainda são projeção. -->
 {
   projeto.projecoes?.length > 0 && (
-    <section class="section section--ink">
+    <section class="section section--marinho">
       <div class="wrap">
         <div class="section-head">
           <h2>{p.rotulos.projecoes}</h2>
@@ -232,7 +234,7 @@ const fotosRestantes = fotos.slice(blocos.length);
 <style>
   .topo {
     background:
-      radial-gradient(70% 130% at 78% 0%, rgba(245, 166, 51, 0.24) 0%, rgba(245, 166, 51, 0) 60%),
+      radial-gradient(70% 130% at 78% 0%, rgba(242, 182, 32, 0.24) 0%, rgba(242, 182, 32, 0) 60%),
       linear-gradient(180deg, var(--bg-warm) 0%, var(--bg) 100%);
     padding-block: var(--space-l) var(--space-l);
   }
@@ -280,17 +282,15 @@ const fotosRestantes = fotos.slice(blocos.length);
     border-radius: 50%;
     background: currentColor;
   }
-  .selo--ativo { background: rgba(83, 148, 146, 0.16); color: var(--teal-deep); }
-  .selo--piloto { background: rgba(245, 166, 51, 0.2); color: var(--gold-deep); }
-  .selo--concluido { background: rgba(67, 42, 12, 0.1); color: var(--brown); }
+  .selo--ativo { background: rgba(38, 76, 107, 0.12); color: var(--petroleo); }
+  .selo--piloto { background: rgba(242, 182, 32, 0.22); color: var(--marrom); }
+  .selo--concluido { background: rgba(111, 57, 26, 0.12); color: var(--marrom); }
 
   .capa { margin-top: var(--space-m); }
   .capa img {
     width: 100%;
     max-height: 30rem;
     object-fit: cover;
-    border-radius: var(--radius-l);
-    border: 1px solid var(--line);
   }
 
   /* ------------------------------ BLOCOS ------------------------------
@@ -317,22 +317,8 @@ const fotosRestantes = fotos.slice(blocos.length);
   .bloco--simples { grid-template-columns: minmax(0, 1fr); }
   .bloco--simples .bloco__texto { max-width: var(--wrap-narrow); }
 
-  .bloco__foto { margin: 0; }
-
-  .bloco__foto img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border-radius: var(--radius-m);
-    border: 1px solid var(--line);
-  }
-
-  .bloco__foto figcaption {
-    margin-top: var(--space-2xs);
-    font-size: var(--step--1);
-    color: var(--ink-muted);
-    line-height: 1.5;
-  }
+  .bloco__foto { --inclinacao: -2deg; max-width: 34rem; margin-inline: auto; }
+  .bloco--invertido .bloco__foto { --inclinacao: 2deg; }
 
   @media (min-width: 861px) {
     .bloco--invertido .bloco__texto { order: 2; }

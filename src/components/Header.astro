@@ -87,7 +87,7 @@ const alt = altHref(routeKey, lang);
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(253, 250, 244, 0.92);
+    background: rgba(250, 244, 234, 0.92);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
@@ -121,7 +121,8 @@ const alt = altHref(routeKey, lang);
   }
 
   .cab__nome strong {
-    font-weight: 900;
+    font-family: var(--font-display);
+    font-weight: 800;
     font-size: 1.15rem;
     letter-spacing: -0.03em;
   }
@@ -242,7 +243,7 @@ const alt = altHref(routeKey, lang);
     inset: 0;
     border-radius: 999px;
     background: var(--gold);
-    box-shadow: 0 1px 3px rgba(67, 42, 12, 0.28);
+    box-shadow: 0 1px 3px rgba(46, 19, 13, 0.28);
     transition: transform 0.16s var(--ease);
     /* Sem fill-mode de propósito: com "both" o último quadro da animação
        continuaria valendo e anularia o encolhimento do :active abaixo,

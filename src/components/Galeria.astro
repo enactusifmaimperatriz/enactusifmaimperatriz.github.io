@@ -6,18 +6,22 @@
  * `base` é a pasta dentro de public onde estão os arquivos,
  * por exemplo "/fotos/campo".
  *
+ * `estilo`:
+ *   "grade"    — fotos em grade limpa, a primeira maior (padrão)
+ *   "polaroid" — molduras brancas levemente inclinadas, para bastidores
+ *
  * Se a lista chegar vazia, o componente não renderiza nada.
  */
-const { itens = [], base = "/fotos", lang = "pt" } = Astro.props;
+const { itens = [], base = "/fotos", lang = "pt", estilo = "grade" } = Astro.props;
 const fotos = itens.filter((i) => i && i.arquivo);
 ---
 
 {
   fotos.length > 0 && (
-    <ul class="galeria" data-total={fotos.length}>
+    <ul class={`galeria galeria--${estilo}`} data-total={fotos.length}>
       {fotos.map((f, i) => (
-        <li class="galeria__item">
-          <figure>
+        <li class="galeria__item revelar" data-atraso={String(Math.min(i, 3))}>
+          <figure class={estilo === "polaroid" ? "polaroid" : undefined}>
             <img
               src={`${base}/${f.arquivo}`}
               alt={f.alt?.[lang] ?? f.alt?.pt ?? ""}
@@ -41,31 +45,44 @@ const fotos = itens.filter((i) => i && i.arquivo);
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   }
 
-  /* A primeira foto ocupa duas colunas, o que dá hierarquia à galeria
-     em vez de deixar uma grade uniforme e sem foco. */
-  .galeria[data-total="1"] { grid-template-columns: minmax(0, 1fr); }
+  /* ---- grade ---- */
+  .galeria--grade[data-total="1"] { grid-template-columns: minmax(0, 1fr); }
 
   @media (min-width: 800px) {
-    .galeria:not([data-total="1"]):not([data-total="2"]) .galeria__item:first-child {
+    .galeria--grade:not([data-total="1"]):not([data-total="2"]) .galeria__item:first-child {
       grid-column: span 2;
     }
   }
 
-  .galeria figure { margin: 0; }
+  .galeria--grade figure { margin: 0; }
 
-  .galeria img {
+  .galeria--grade img {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
     border-radius: var(--radius-m);
-    background: var(--bg-warm);
+    background: var(--areia);
     border: 1px solid var(--line);
   }
 
-  .galeria figcaption {
+  .galeria--grade figcaption {
     margin-top: var(--space-2xs);
     font-size: var(--step--1);
     color: var(--ink-muted);
     line-height: 1.5;
   }
+
+  /* ---- polaroid ----
+     Inclinações alternadas, pequenas, para parecer arrumado sobre a mesa
+     e não jogado. */
+  .galeria--polaroid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-l) var(--space-m);
+    padding-block: var(--space-xs);
+  }
+
+  .galeria--polaroid .galeria__item:nth-child(4n + 1) .polaroid { --inclinacao: -2.5deg; }
+  .galeria--polaroid .galeria__item:nth-child(4n + 2) .polaroid { --inclinacao: 1.8deg; }
+  .galeria--polaroid .galeria__item:nth-child(4n + 3) .polaroid { --inclinacao: -1.2deg; }
+  .galeria--polaroid .galeria__item:nth-child(4n + 4) .polaroid { --inclinacao: 2.4deg; }
 </style>
