@@ -36,7 +36,13 @@ const ogImage = new URL("/brand/logo-time.png", Astro.site).href;
     <meta name="twitter:card" content="summary_large_image" />
 
     <meta name="theme-color" content="#f2b620" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Ícones gerados a partir da logo oficial do time (public/brand/logo-time.png).
+         O .ico atende navegadores antigos; o PNG de 32 px, a aba dos atuais;
+         o apple-touch-icon, a tela inicial do iPhone; o de 512, o Android. -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
 
     <!-- Tipografia da identidade: Sora (títulos), Manrope (texto),
          Yellowtail (assinaturas curtas). -->
